@@ -16,11 +16,24 @@ SCHEMAS = {
 
 def get_yes_no():
     while True:
-        answer = raw_input()
-        if answer.lower() in ['y', 'yes', 'n', 'no']:
-            return answer.lower() in ['y', 'yes']
+        answer = raw_input('\n')
+        if answer.lower().strip() in ['y', 'yes', 'n', 'no']:
+            print ''
+            return answer.lower().strip() in ['y', 'yes']
         else:
             print "Please enter either y or n"
+
+
+def get_answer_from(options):
+    normalized_options = [str(option).lower().strip() for option in options]
+
+    while True:
+        answer = raw_input('\n')
+        if answer.lower().strip() in normalized_options:
+            print ''
+            return answer.lower().strip()
+        else:
+            print "Please choose from: " + str(options)
 
 
 def retain_after_matching_schemas(entry):
@@ -38,11 +51,36 @@ def retain_after_matching_schemas(entry):
         print 'Do you want to keep it? (y/n)'
         print '-' * 32
         utils.print_entry(entry)
-        print '\n'
 
         return get_yes_no()
     else:
         return True
+
+
+def remove_duplicates(entries):
+    ret = []
+    entries_by_title = {}
+
+    for entry in entries:
+        key = entry['title'].lower().strip()
+        if key in entries_by_title:
+            entries_by_title[key].append(entry)
+        else:
+            entries_by_title[key] = [entry]
+
+    for key, entries in entries_by_title.iteritems():
+        if len(entries) > 1:
+            print 'Duplicate entries detected. Which one of the following you want to keep?'
+            for i in range(len(entries)):
+                print str(i) + '.' + '-' * 30
+                utils.print_entry(entries[i])
+
+            answer = get_answer_from(range(len(entries)))
+            ret.append(entries[int(answer)])
+        else:
+            ret.append(entries[0])
+
+    return ret
 
 
 def main(file_name, output='default'):
@@ -61,6 +99,7 @@ def main(file_name, output='default'):
         else:
             toDump.append(entry)
 
+    # Remove duplicates
+    toRetain = remove_duplicates(toRetain)
 
-
-    print toDump
+    # Write to files
