@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+import logging
+
+logger = logging.getLogger(__name__)
+
+bin_dir = os.path.dirname(os.path.realpath(__file__))
+src_dir = os.path.realpath(os.path.join(bin_dir, "../src/"))
+sys.path.append(src_dir)
+
+import main
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filepath",
+                        help="Path to the bibtex file",
+                        type=str)
+    parser.add_argument("-o", "--output-logging-path",
+                        help="Path to the logging file. Default to /tmp/bibtex_cleaner.log",
+                        type=str)
+    parser.add_argument("-v", "--verbose-level",
+                        help="Information level for logging. Default to INFO",
+                        type=str)
+    args = parser.parse_args()
+
+    logging_path = args.output_logging_path or '/tmp/bibtex_cleaner.log'
+    verbose_level = args.verbose_level or 'INFO'
+
+    level = getattr(logging, verbose_level)
+    if not level:
+        logger.error("Invalid verbose level {}".format(verbose_level))
+        sys.exit(1)
+
+    try:
+        logging.basicConfig(filename=logging_path, level=level)
+    except IOError as e:
+        logger.error("Unable to create logging file with path: {}", logging_path)
+
+    try:
+        main.main(args.filepath)
+    except IOError as e:
+        logger.error("I/O error({0}): {1}".format(e.errno, e.strerror))
+        sys.exit(2)
