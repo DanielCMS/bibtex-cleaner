@@ -6,35 +6,17 @@ from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import homogeneize_latex_encoding
 
 DEFAULT = 'default'
+CONFIG = utils.load_configuration()
+FILTER_MODE = CONFIG['filterMode'].lower().strip()
+DUPLICATION_RESOLVE = CONFIG['duplicationResolve'].lower().strip()
 SCHEMAS = {
     'ASCII_CODE_RULE': ascii_code_rule.test,
     'NO_SHORT_TITLE_RULE': no_short_title_rule.test,
     'ENFORCE_YEAR_RULE': enforce_year_rule.test,
     'NO_SUPER_LONG_TITLE_RULE': no_super_long_title_rule.test
 }
-
-
-def get_yes_no():
-    while True:
-        answer = raw_input('\n')
-        if answer.lower().strip() in ['y', 'yes', 'n', 'no']:
-            print ''
-            return answer.lower().strip() in ['y', 'yes']
-        else:
-            print "Please enter either y or n"
-
-
-def get_answer_from(options):
-    normalized_options = [str(option).lower().strip() for option in options]
-
-    while True:
-        answer = raw_input('\n')
-        if answer.lower().strip() in normalized_options:
-            print ''
-            return answer.lower().strip()
-        else:
-            print "Please choose from: " + str(options)
-
+CASUAL_SCHEMAS = ['ASCII_CODE_RULE', 'NO_SHORT_TITLE_RULE', 'NO_SUPER_LONG_TITLE_RULE']
+CAREFUL_SCHEMAS = ['ASCII_CODE_RULE', 'NO_SUPER_LONG_TITLE_RULE']
 
 def retain_after_matching_schemas(entry):
     results = {}
@@ -43,16 +25,40 @@ def retain_after_matching_schemas(entry):
         results[rule] = tester(entry)
 
     if not all(results[rule]['passed'] for rule in results):
-        print 'The following item seems suspicious according to the following rule(s):'
-        for rule, result in results.iteritems():
-            if not result['passed']:
-                print rule + ': ' + result['error']
+        if FILTER_MODE == 'harsh':
+            return False
+        elif FILTER_MODE == 'casual':
+            for rule, result in results.iteritems():
+                if not result['passed'] and rule in CASUAL_SCHEMAS:
+                    return False
 
-        print 'Do you want to keep it? (y/n)'
-        print '-' * 32
-        utils.print_entry(entry)
+            return True
+        elif FILTER_MODE == 'careful':
+            for rule, result in results.iteritems():
+                if not result['passed'] and rule in CAREFUL_SCHEMAS:
+                    return False
 
-        return get_yes_no()
+            print 'The following item seems suspicious according to the following rule(s):'
+            for rule, result in results.iteritems():
+                if not result['passed']:
+                    print rule + ': ' + result['error']
+
+            print 'Do you want to keep it? (y/n)'
+            print '-' * 32
+            utils.print_entry(entry)
+
+            return utils.get_yes_no()
+        else:
+            print 'The following item seems suspicious according to the following rule(s):'
+            for rule, result in results.iteritems():
+                if not result['passed']:
+                    print rule + ': ' + result['error']
+
+            print 'Do you want to keep it? (y/n)'
+            print '-' * 32
+            utils.print_entry(entry)
+
+            return utils.get_yes_no()
     else:
         return True
 
@@ -75,8 +81,8 @@ def remove_duplicates(entries):
                 print str(i) + '.' + '-' * 30
                 utils.print_entry(entries[i])
 
-            answer = get_answer_from(range(len(entries)))
-            ret.append(entries[int(answer)])
+            answer = utils.get_answer_from(range(1, len(entries) + 1))
+            ret.append(entries[int(answer) - 1])
         else:
             ret.append(entries[0])
 
