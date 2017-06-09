@@ -1,9 +1,10 @@
 from rules import ascii_code_rule, no_short_title_rule, enforce_year_rule, no_super_long_title_rule
 import utils
-import pprint
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
+from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.customization import homogeneize_latex_encoding
+from bibtexparser.bibdatabase import BibDatabase
 
 DEFAULT = 'default'
 CONFIG = utils.load_configuration()
@@ -109,3 +110,15 @@ def main(file_name, output='default'):
     toRetain = remove_duplicates(toRetain)
 
     # Write to files
+    writer = BibTexWriter()
+    writer.indent = '    '
+
+    toRetainDb = BibDataBase()
+    toRetainDb.entries = toRetain
+    with open('filtered.bib', 'w') as bibfile:
+        bibfile.write(writer.write(toRetainDb))
+
+    toDumpDb = BibDataBase()
+    toDumpDb.entries = toDump
+    with open('dumped.bib', 'w') as bibfile:
+        bibfile.write(writer.write(toDumpDb))

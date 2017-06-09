@@ -1,3 +1,5 @@
+MIN_LEN = 3
+
 def test(entry):
     if 'title' not in entry:
         return {
@@ -6,7 +8,7 @@ def test(entry):
         }
     else:
         title = entry["title"]
-        if len(title.split(' ')) < 3:
+        if len(title.split(' ')) < MIN_LEN:
             return {
                 "passed": False,
                 "error": title

@@ -1,3 +1,5 @@
+MAX_LEN = 20
+
 def test(entry):
     if 'title' not in entry:
         return {
@@ -6,7 +8,7 @@ def test(entry):
         }
     else:
         title = entry["title"]
-        if len(title.split(' ')) > 20:
+        if len(title.split(' ')) > MAX_LEN:
             return {
                 "passed": False,
                 "error": title
