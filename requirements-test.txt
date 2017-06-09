@@ -1,0 +1,5 @@
+bibtexparser==0.6.2
+pytest==2.8.2
+pytest-cov==2.2.0
+mock==1.0.1
+coverage==3.7.1
