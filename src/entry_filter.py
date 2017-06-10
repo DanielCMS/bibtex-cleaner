@@ -14,6 +14,18 @@ class EntryFilter:
     def __init__(self):
         self.filter_mode = utils.load_configuration()['filterMode']
 
+    def filter_entries(self, entries):
+        to_retain = []
+        to_dump = []
+
+        for entry in entries:
+            if self.should_retain_entry(entry):
+                to_retain.append(entry)
+            else:
+                to_dump.append(entry)
+
+        return to_retain, to_dump
+
     def should_retain_entry(self, entry):
         results = {}
 

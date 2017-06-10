@@ -1,4 +1,4 @@
 {
     "filterMode": "careful",
-    "duplicationResolve": "primal"
+    "duplicationResolveMode": "primal"
 }

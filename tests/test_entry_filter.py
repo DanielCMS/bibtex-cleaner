@@ -14,11 +14,11 @@ class TestUtils(TestCase):
     def test_should_retain_entry_in_harsh_mode(self):
         with patch('utils.load_configuration', return_value={'filterMode': 'harsh'}) as mock:
             subject = EntryFilter()
-            dummyEntry = {
+            dummy_entry = {
                 'year': '1991',
                 'title': 'foo'
             }
-            goodEntry = {
+            good_entry = {
                 'year': '1948',
                 'title': 'A mathematical theory of communication',
                 'journal': 'Bell system technical journal',
@@ -26,18 +26,18 @@ class TestUtils(TestCase):
                 'volume': '27'
             }
 
-            assert not subject.should_retain_entry(dummyEntry)
-            assert subject.should_retain_entry(goodEntry)
+            assert not subject.should_retain_entry(dummy_entry)
+            assert subject.should_retain_entry(good_entry)
             assert mock.called
 
     def test_should_retain_entry_in_casual_mode(self):
         with patch('utils.load_configuration', return_value={'filterMode': 'casual'}) as mock:
             subject = EntryFilter()
-            dummyEntry = {
+            dummy_entry = {
                 'year': '1991',
                 'title': 'foo'
             }
-            goodEntry = {
+            good_entry = {
                 'year': '1948',
                 'title': 'A mathematical theory of communication',
                 'journal': 'Bell system technical journal',
@@ -45,20 +45,20 @@ class TestUtils(TestCase):
                 'volume': '27'
             }
 
-            assert subject.should_retain_entry(dummyEntry)
-            assert subject.should_retain_entry(goodEntry)
+            assert subject.should_retain_entry(dummy_entry)
+            assert subject.should_retain_entry(good_entry)
 
     def test_should_retain_entry_in_careful_mode(self):
         with patch('utils.load_configuration', return_value={'filterMode': 'careful'}) as mock:
             subject = EntryFilter()
-            dummyEntry = {
+            dummy_entry = {
                 'year': '1991'
             }
-            casualEntry = {
+            casual_entry = {
                 'year': '1991',
                 'title': 'foo'
             }
-            goodEntry = {
+            good_entry = {
                 'year': '1948',
                 'title': 'A mathematical theory of communication',
                 'journal': 'Bell system technical journal',
@@ -66,21 +66,21 @@ class TestUtils(TestCase):
                 'volume': '27'
             }
 
-            assert subject.should_retain_entry(goodEntry)
-            assert not subject.should_retain_entry(dummyEntry)
+            assert subject.should_retain_entry(good_entry)
+            assert not subject.should_retain_entry(dummy_entry)
 
             with patch('utils.get_yes_no', return_value=True) as raw:
-                assert subject.should_retain_entry(casualEntry)
+                assert subject.should_retain_entry(casual_entry)
             with patch('utils.get_yes_no', return_value=False) as raw:
-                assert not subject.should_retain_entry(casualEntry)
+                assert not subject.should_retain_entry(casual_entry)
 
     def test_should_retain_entry_in_manual_mode(self):
         with patch('utils.load_configuration', return_value={'filterMode': 'manual'}) as mock:
             subject = EntryFilter()
-            dummyEntry = {
+            dummy_entry = {
                 'year': '1991'
             }
-            goodEntry = {
+            good_entry = {
                 'year': '1948',
                 'title': 'A mathematical theory of communication',
                 'journal': 'Bell system technical journal',
@@ -88,19 +88,42 @@ class TestUtils(TestCase):
                 'volume': '27'
             }
 
-            assert subject.should_retain_entry(goodEntry)
+            assert subject.should_retain_entry(good_entry)
 
             with patch('utils.get_yes_no', return_value=True) as raw:
-                assert subject.should_retain_entry(dummyEntry)
+                assert subject.should_retain_entry(dummy_entry)
             with patch('utils.get_yes_no', return_value=False) as raw:
-                assert not subject.should_retain_entry(dummyEntry)
+                assert not subject.should_retain_entry(dummy_entry)
 
     def test_should_retain_entry_for_invalid_mode(self):
         with patch("utils.load_configuration", return_value={'filterMode': 'foo'}) as mock:
             subject = EntryFilter()
-            dummyEntry = {
+            dummy_entry = {
                 'year': '1992'
             }
 
         with self.assertRaises(Exception) as context:
-            subject.should_retain_entry(dummyEntry)
+            subject.should_retain_entry(dummy_entry)
+
+    def test_filter_entries(self):
+        with patch('utils.load_configuration', return_value={'filterMode': 'harsh'}) as mock:
+            subject = EntryFilter()
+            dummy_entry = {
+                'year': '1991'
+            }
+            casual_entry = {
+                'year': '1991',
+                'title': 'foo'
+            }
+            good_entry = {
+                'year': '1948',
+                'title': 'A mathematical theory of communication',
+                'journal': 'Bell system technical journal',
+                'author': 'Shannon, C. E.',
+                'volume': '27'
+            }
+
+            entries = [dummy_entry, casual_entry, good_entry]
+            to_retain, to_dump = subject.filter_entries(entries)
+            self.assertEqual(to_retain, [good_entry])
+            self.assertEqual(to_dump, [dummy_entry, casual_entry])

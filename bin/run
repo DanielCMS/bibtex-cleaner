@@ -11,6 +11,11 @@ bin_dir = os.path.dirname(os.path.realpath(__file__))
 src_dir = os.path.realpath(os.path.join(bin_dir, "../src/"))
 sys.path.append(src_dir)
 
+import bibtexparser
+from bibtexparser.bparser import BibTexParser
+from bibtexparser.bwriter import BibTexWriter
+from bibtexparser.customization import homogeneize_latex_encoding
+from bibtexparser.bibdatabase import BibDatabase
 import main
 
 if __name__ == "__main__":
@@ -40,7 +45,24 @@ if __name__ == "__main__":
         logger.error("Unable to create logging file with path: {}", logging_path)
 
     try:
-        main.main(args.filepath)
+        with open(file_name) as bibtex_file:
+            parser = BibTexParser()
+            parser.customization = homogeneize_latex_encoding
+            bib_database = bibtexparser.load(bibtex_file, parser=parser)
+
+            to_retain, to_dump = main.main(bib_database.entries)
+
+            to_retain_db = BibDataBase()
+            to_retain_db.entries = to_retain
+
+            with open('filtered.bib', 'w') as bibfile:
+                bibfile.write(writer.write(to_retain_db))
+
+            to_dump_db = BibDataBase()
+            to_dump_db.entries = to_dump
+            with open('dumped.bib', 'w') as bibfile:
+                bibfile.write(writer.write(to_dump_db))
+
     except IOError as e:
         logger.error("I/O error({0}): {1}".format(e.errno, e.strerror))
         sys.exit(2)
