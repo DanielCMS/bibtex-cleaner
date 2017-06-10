@@ -1,6 +1,5 @@
 from rules import enforce_year_rule, no_short_title_rule, no_super_long_title_rule, ascii_code_rule
 from unittest import TestCase
-import pytest
 
 class TeseRules(TestCase):
     def test_enforce_year_rule(self):
