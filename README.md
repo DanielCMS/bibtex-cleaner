@@ -7,6 +7,7 @@ It basically runs two steps. First, it matches a set of pre-defined rules agains
 ### Installation
 * `sudo pip install -r requirements.txt`
 * `sudo pip install -r requirements-test.txt`
+
 The second command is necessary only if you want to run tests.
 
 ### Run
@@ -17,6 +18,7 @@ The second command is necessary only if you want to run tests.
 
 ### Config
 In the config folder, you can specify the mode how the cleaner works. There are two fields:
+
 `filterMode`, which determines how suspicious items are removed:
 * `harsh`: Items that violate any rule will be brutally removed
 * `casual`: Items that are usually fine will be retained
