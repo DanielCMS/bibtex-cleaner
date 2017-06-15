@@ -21,9 +21,10 @@ In the config folder, you can specify the mode how the cleaner works. There are 
 
 `filterMode`, which determines how suspicious items are removed:
 * `harsh`: Items that violate any rule will be brutally removed
-* `casual`: Items that are usually fine will be retained
+* `casual`: Items that are usually fine will be retained. Other items are removed
 * `careful`: Items that are usually fine will be retained. Removal of other items would be based on user interactive input
 * `manual`: All item removal would be based on user interactive input
+
 `duplicationResolveMode`, which determines how duplicate items are resolved:
 * `primal`: Items are chosen based on the order of: journal > conference > axiv > others
 * `first`: The first item among duplications would be chosen
