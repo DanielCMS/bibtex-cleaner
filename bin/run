@@ -45,12 +45,12 @@ if __name__ == "__main__":
             to_retain_db = BibDatabase()
             to_retain_db.entries = to_retain
             with io.open(os.path.join(output_path, 'filtered.bib'), 'w', encoding='utf-8') as bibfile:
-                bibfile.write(writer.write(to_retain_db))
+                bibfile.write(unicode(writer.write(to_retain_db), 'utf-8'))
 
             to_dump_db = BibDatabase()
             to_dump_db.entries = to_dump
             with io.open(os.path.join(output_path, 'dumped.bib'), 'w', encoding='utf-8') as bibfile:
-                bibfile.write(writer.write(to_dump_db))
+                bibfile.write(unicode(writer.write(to_dump_db), 'utf-8'))
 
     except IOError as e:
         logger.error("I/O error({0}): {1}".format(e.errno, e.strerror))
