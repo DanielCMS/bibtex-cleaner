@@ -1,12 +1,13 @@
 from __future__ import print_function
-from rules import ascii_code_rule, no_short_title_rule, enforce_year_rule, no_super_long_title_rule
+from rules import ascii_code_rule, no_short_title_rule, enforce_year_rule, no_super_long_title_rule, enforce_media_rule
 import utils
 
 SCHEMAS = {
     'ASCII_CODE_RULE': ascii_code_rule.test,
     'NO_SHORT_TITLE_RULE': no_short_title_rule.test,
     'ENFORCE_YEAR_RULE': enforce_year_rule.test,
-    'NO_SUPER_LONG_TITLE_RULE': no_super_long_title_rule.test
+    'NO_SUPER_LONG_TITLE_RULE': no_super_long_title_rule.test,
+    'ENFORCE_MEDIA_RULE': enforce_media_rule.test
 }
 MAND_SCHEMAS = ['ASCII_CODE_RULE', 'NO_SUPER_LONG_TITLE_RULE']
 
